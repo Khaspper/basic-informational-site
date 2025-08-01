@@ -1,50 +1,10 @@
-import { createServer } from "node:http";
-import { promises as fs } from "node:fs";
-
-const hostname = "localhost";
-const port = 8080;
-
-let indexPage = undefined;
-let aboutPage = undefined;
-let contactMePage = undefined;
-let notFoundPage = undefined;
-
-async function getFiles() {
-  try {
-    indexPage = await fs.readFile("./index.html", "utf8");
-    aboutPage = await fs.readFile("./about.html", "utf8");
-    contactMePage = await fs.readFile("./contact-me.html", "utf8");
-    notFoundPage = await fs.readFile("./notFound.html", "utf8");
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-await getFiles();
-
-const server = createServer((req, res) => {
-  res.setHeader("Content-Type", "text/html");
-  switch (req.url) {
-    case "/":
-      res.statusCode = 200;
-      res.end(indexPage);
-      break;
-    case "/about":
-      res.statusCode = 200;
-      res.end(aboutPage);
-      break;
-    case "/contact-me":
-      res.statusCode = 200;
-      res.end(contactMePage);
-      break;
-
-    default:
-      res.statusCode = 404;
-      res.end(notFoundPage);
-      break;
-  }
-});
-
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_http_1 = require("node:http");
+var hostname = "localhost";
+var port = 8080;
+var server = (0, node_http_1.createServer)(function (req, res) {
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "text/plain");
+    res.end("Hello World");
 });
