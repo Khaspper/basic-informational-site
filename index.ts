@@ -1,52 +1,29 @@
-import { createServer } from "node:http";
-import { promises as fs } from "node:fs";
+const e = require("express");
+const path = require("path");
+import type { Request, Response } from "express";
 
-const hostname = "localhost";
-const port = 8080;
+const app = e();
+const PORT = 3000;
 
-let indexPage: string,
-  aboutPage: string,
-  contactMePage: string,
-  notFoundPage: string;
+app.get("/", (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+  console.log('We got a request for "/"');
+});
 
-async function getFiles() {
-  try {
-    indexPage = await fs.readFile("./index.html", "utf8");
-    aboutPage = await fs.readFile("./about.html", "utf8");
-    contactMePage = await fs.readFile("./contactMe.html", "utf8");
-    notFoundPage = await fs.readFile("./notFound.html", "utf8");
-  } catch (error) {
-    console.log(error);
-  }
-}
+app.get("/about", (req: Request, res: Response) => {
+  res.sendFile("about.html", { root: __dirname });
+  console.log('We got a request for "/about"');
+});
 
-getFiles()
-  .then(() => {
-    const server = createServer((req, res) => {
-      res.setHeader("Content-Type", "text/html");
-      switch (req.url) {
-        case "/":
-          res.statusCode = 200;
-          res.end(indexPage);
-          break;
-        case "/about":
-          res.statusCode = 200;
-          res.end(aboutPage);
-          break;
-        case "/contact-me":
-          res.statusCode = 200;
-          res.end(contactMePage);
-          break;
+app.get("/contact-me", (req: Request, res: Response) => {
+  res.sendFile("contactMe.html", { root: __dirname });
+  console.log('We got a request for "/contact-me"');
+});
 
-        default:
-          res.statusCode = 400;
-          res.end(notFoundPage);
-          break;
-      }
-    });
+app.get("*", (req: Request, res: Response) => {
+  res.status(404).sendFile("notFound.html", { root: __dirname });
+});
 
-    server.listen(port, hostname, () => {
-      console.log(`Server running at http://${hostname}:${port}/`);
-    });
-  })
-  .catch((error) => console.log(error));
+app.listen(PORT, () => {
+  console.log(`listening on PORT: ${PORT}`);
+});
